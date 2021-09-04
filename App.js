@@ -1,9 +1,7 @@
 import React, { memo }  from 'react';
 import Layout from "./component/Layout";
-import Footer from "./component/Footer";
 import TodoList from "./component/TodoList";
 import AddTodoForm from "./component/AddTodoForm";
-import AddTask from "./component/AddTask";
 
 import { useInputValue, useTodos } from "./hooks/todoList";
 

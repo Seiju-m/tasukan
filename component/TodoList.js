@@ -32,7 +32,6 @@ const TodoList = memo((props) => {
           </Right>
         </ListItem>
       }
-    //   keyExtractor={(item, index) => index.toString()}
     />
   );
 });
