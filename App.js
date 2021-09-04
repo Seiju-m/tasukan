@@ -1,21 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { memo }  from 'react';
+import Layout from "./component/Layout";
+import Footer from "./component/Footer";
+import TodoList from "./component/TodoList";
+import AddTodoForm from "./component/AddTodoForm";
+import AddTask from "./component/AddTask";
 
-export default function App() {
+import { useInputValue, useTodos } from "./hooks/todoList";
+
+const App = memo((props) => {
+  const { inputValue, changeInput, clearInput } = useInputValue();
+  const { todos, addTodo, checkTodo, removeTodo } = useTodos();
+
+  const clearInputAndAddTodo = _ => {
+    clearInput();
+    addTodo(inputValue);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <Layout>
+        <AddTodoForm
+          inputValue={inputValue}
+          changeInput={changeInput}
+          onIconPress={clearInputAndAddTodo}
+        />
+        <TodoList
+          items={todos}
+          onItemCheck={idx => checkTodo(idx)}
+          onItemRemove={idx => removeTodo(idx)}
+        />
+      </Layout>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });
+
+export default App;
