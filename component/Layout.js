@@ -1,23 +1,38 @@
 import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
 import { Container, Header, Body, Title, Content } from "native-base";
+
+// to avoid VirtuallizedLists nested error
+const VirtualizedView = (props) => {
+  return (
+    <FlatList
+      data={[]}
+      ListEmptyComponent={null}
+      keyExtractor={() => "dummy"}
+      renderItem={null}
+      ListHeaderComponent={() => (
+        <React.Fragment>{props.children}</React.Fragment>
+      )}
+    />
+  );
+}
 
 const Layout = memo((props) => {
   const { children } = props;
 
   return (
-    <Container>
+    <VirtualizedView>
       <Header>
         <Body>
           <Title>Hooks Todo List</Title>
         </Body>
       </Header>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
       <Content style={styles.content}>
         {children}
       </Content>
-      </View>
-    </Container>
+      </SafeAreaView>
+    </VirtualizedView>
   );
 });
 
