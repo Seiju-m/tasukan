@@ -1,40 +1,41 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-export const useInputValue = (initialValue = '') => {
+export const useInputValue = (initialValue = "") => {
   const [inputValue, setInputValue] = useState(initialValue);
 
   return {
     inputValue,
-    changeInput: event => {
-      setInputValue(event.nativeEvent.text)},
-    clearInput: () => setInputValue(''),
+    changeInput: (event) => {
+      // console.log(event.nativeEvent)
+      setInputValue(event.nativeEvent.text);
+    },
+    clearInput: () => setInputValue(""),
   };
 };
 
-
-export const useTodos = (initialValue = []) => {
-  const [todos, setTodos] = useState(initialValue);
+export const useGroupValue = (initialValue = "") => {
+  const [groupValue, setGroupValue] = useState(initialValue);
 
   return {
-    todos,
-
-    addTodo: todoText => {
-      if (todoText !== '') {
-        setTodos(todos.concat({ todoText, checked: false }));
-      }
+    groupValue,
+    changeGroup: (event) => {
+      setGroupValue(event.nativeEvent.text);
     },
+    clearGroup: () => setGroupValue(""),
+  };
+};
 
-    checkTodo: checkIndex => {
-      setTodos(
-        todos.map((todo, index) => {
-          if (checkIndex === index) todo.checked = !todo.checked;
-        return todo;
-        })
-      )
+export const useTimeValue = (initialValue = "") => {
+  const [timeValue, setTimeValue] = useState(initialValue);
+
+  return {
+    timeValue,
+    changeTime: (event) => {
+      console.log("groupvent")
+      console.log(event.nativeEvent)
+      console.log(new Date(event.nativeEvent.timestamp))
+      // setTimeValue(event.nativeEvent.text);
     },
-
-    removeTodo: removeIndex => {
-      setTodos(todos.filter((todos, index) => removeIndex !== index));
-    }
+    clearTime: () => setGroupValue(""),
   };
 };
