@@ -35,8 +35,13 @@ import React from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
-import { store, persistor } from "./redux/store";
+import store, { persistor } from "./redux/store";
 import Layout from "./component/Layout";
+
+//store.subscribe(() => {
+//   console.log("before store");
+//   console.log(store.getState());
+// });
 
 export default function App() {
   return (

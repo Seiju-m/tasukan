@@ -1,58 +1,55 @@
-// Define action types
+// // Define action types
 export const GET_TASK = "GET_TASK";
 export const ADD_TO_TASK_LIST = "ADD_TO_TASK_LIST";
 export const REMOVE_FROM_TASK_LIST = "REMOVE_FROM_TASK_LIST";
 export const UPDATE_TASK = "UPDATE_TASK";
 export const SORT_TASK = "SORT_TASK";
+
+export const ADD_TODO = "ADD_TODO";
+export const DEL_TODO = "DEL_TODO";
+export const TOGGLE_TODO = "TOGGLE_TODO";
 export const SET_VISIBILITY_FILTER = "SET_VISIBILITY_FILTER";
 
-// export const getBooks = () => {
-//   try {
-//     return async (dispatch) => {
-//       // const response = await axios.get(`${BASE_URL}`);
-//       let resp = await loadTask();
-//       if (resp) {
-//         dispatch({
-//           type: GET_BOOKS,
-//           payload: resp,
-//         });
-//       } else {
-//         console.log("Unable to fetch data from the API BASE URL!");
-//       }
-//     };
-//   } catch (error) {
-//     // Add custom logic to handle errors
-//     console.log(error);
-//   }
-// };
+let nextTodoId = 1;
 
-export const addTask = (task) => (dispatch) => {
-  dispatch({
-    type: ADD_TO_TASK_LIST,
-    payload: task,
-  });
-};
+export const addTask = (task, time) => ({
+  type: ADD_TO_TASK_LIST,
+  payload: task,
+  time: time,
+  id: nextTodoId++,
+});
 
-export const removeTask = (task) => (dispatch) => {
-  dispatch({
-    type: REMOVE_FROM_TASK_LIST,
-    payload: task,
-  });
-};
+export const removeTask = (id) => ({
+  type: REMOVE_FROM_TASK_LIST,
+  id,
+});
 
-export const updateTask = (taskList) => (dispatch) => {
-  dispatch({
-    type: UPDATE_TASK,
-    payload: taskList,
-  });
-};
+export const updateTask = (id) => ({
+  type: UPDATE_TASK,
+  id,
+});
 
-export const sortTask = (taskList) => (dispatch) => {
-  dispatch({
-    type: SORT_TASK,
-    payload: taskList,
-  });
-};
+export const sortTask = (taskList) => ({
+  type: SORT_TASK,
+  payload: taskList,
+});
+
+export const addTodo = (text, time) => ({
+  type: ADD_TODO,
+  id: nextTodoId++,
+  text,
+  time,
+});
+
+export const delTodo = (id) => ({
+  type: DEL_TODO,
+  id,
+});
+
+export const toggleTodo = (id) => ({
+  type: TOGGLE_TODO,
+  id,
+});
 
 export const setVisibilityFilter = (filter) => ({
   type: SET_VISIBILITY_FILTER,

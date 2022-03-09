@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Text,
-  View,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, SafeAreaView, StyleSheet, Text } from "react-native";
 
 // Import mock screens
 import TaskList from "./TaskList";
@@ -14,13 +7,21 @@ import AddTask from "./AddTask";
 import AddModal from "./AddModal";
 import { useModalVisible } from "../hooks/modal";
 import { useInputValue, useGroupValue, useTimeValue } from "../hooks/todoList";
-import { addTask, removeTask, updateTask, sortTask } from "../redux/actions";
+import { VisibilityFilters, setVisibilityFilter } from "../redux/actions";
+import { addTask, sortTask } from "../redux/actions";
+import { addTodo } from "../redux/actions";
 import { useSelector, useDispatch } from "react-redux";
-import { InputGroup } from "native-base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Layout = () => {
-  const { task, tasklist } = useSelector((state) => state.taskReducer);
+  // const { task, tasklist } = useSelector((state) => state.taskReducer);
+  const tasklist = useSelector((state) => {
+    return state.taskReducer.tasklist;
+    // console.log("in use selector");
+    // console.log(state.taskReducer.tasklist);
+  });
+  // console.log("before");
+  // console.log(tasklist);
   const { modalVisible, changeModal } = useModalVisible();
   const { inputValue, changeInput, clearInput } = useInputValue();
   const { groupValue, changeGroup, clearGroup } = useGroupValue();
@@ -40,16 +41,18 @@ const Layout = () => {
     }
   };
 
-  //const fetchBooks = () => dispatch(getBooks());
-  const addToTaskList = (task) => dispatch(addTask(task));
-  const sortTaskList = (task) => dispatch(sortTask(task));
+  // const addToTaskList = (task) => dispatch(addTask(task));
+  // const sortTaskList = (task) => dispatch(sortTask(task));
+  const setFilter = (filter) => dispatch(setVisibilityFilter(filter));
+
+  let filter = VisibilityFilters.SHOW_ALL;
+  const active = useSelector((state) => filter === state.visibilityFilter);
+  // console.log("filter");
+  // console.log(active);
 
   const handleAddTask = (task) => {
-    console.log("in add task");
-    console.log(JSON.stringify(task));
-    task.checked = false;
-    console.log(JSON.stringify(task));
-    addToTaskList(task);
+    // task.checked = false;
+    // addToTaskList(task);
   };
 
   const handleSortList = (sortCase) => {
@@ -58,63 +61,61 @@ const Layout = () => {
 
     if (sortCase == "asc") {
       console.log("in asc");
+      console.log(tasklist);
+
       const sortAsc = tasklist.sort((a, b) => {
+        console.log(a.time);
         a = parseFloat(a.time);
         b = parseFloat(b.time);
         return a - b;
       });
-      sortTaskList(sortAsc);
+      // sortTaskList(sortAsc);
+      setFilter(VisibilityFilters.SHOW_ALL);
+      // console.log(sortAsc);
+      dispatch(sortTask(sortAsc));
+      // console.log("filter");
+      // console.log(active);
     } else if (sortCase == "desc") {
       console.log("in desc");
+      // console.log("filter");
+      // console.log(active);
       const sortDesc = tasklist.sort((a, b) => {
         a = parseFloat(a.time);
         b = parseFloat(b.time);
         return b - a;
       });
-      sortTaskList(sortDesc);
+      // console.log(sortDesc);
+      dispatch(sortTask(sortDesc));
+      setFilter(VisibilityFilters.SHOW_ACTIVE);
     } else {
       console.log("in else");
-      const sortAsc = tasklist.sort((a, b) => {
-        a = parseFloat(a.time);
-        b = parseFloat(b.time);
-        return a - b;
-      });
+      // const sortAsc = tasklist.sort((a, b) => {
+      //   a = parseFloat(a.time);
+      //   b = parseFloat(b.time);
+      //   return a - b;
+      // });
       //一番時間のかかるタスクを取り出し
       let lastTask = sortAsc.slice(-1)[0];
       sortAsc.pop();
       //上記タスクを２番目に追加
       sortAsc.splice(1, 0, lastTask);
-      sortTaskList(sortAsc);
+      // sortTaskList(sortAsc);
+      setFilter(VisibilityFilters.SHOW_ALL);
     }
   };
 
-  let new_task = [
-    {
-      group: "",
-      id: 1,
-      time: "44.22",
-      title: "",
-    },
-    {
-      group: "",
-      id: 2,
-      time: "11.11",
-      title: "",
-    },
-  ];
-
   const inputTask = async (_) => {
     changeModal(!modalVisible);
-    // console.log("time value")
-    // console.log(timeValue)
-    // console.log("before get time")
     let time = await getData();
-    handleAddTask({
-      title: inputValue,
-      id: tasklist.length + 1,
-      time: time,
-      group: groupValue,
-    });
+    // handleAddTask({
+    //   title: inputValue,
+    //   id: tasklist.length + 1,
+    //   time: time,
+    //   group: groupValue,
+    // });
+    // handleAddTask(inputValue);
+    // dispatch(addTodo(inputValue, time));
+    dispatch(addTask(inputValue, time));
   };
 
   return (
@@ -127,7 +128,7 @@ const Layout = () => {
         },
       ]}
     >
-      <View style={{ flex: 4, backgroundColor: "red" }}>
+      <View style={{ flex: 4, backgroundColor: "white" }}>
         <TaskList style={styles.listView}></TaskList>
       </View>
       <View style={{ flex: 1, backgroundColor: "darkorange" }}>

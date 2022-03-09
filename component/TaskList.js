@@ -11,8 +11,9 @@ import {
 import { CheckBox } from "react-native-elements";
 import { useSelector, useDispatch } from "react-redux";
 
-import { addTask, removeTask, updateTask, sortTask } from "../redux/actions";
+import { delTodo, toggleTodo, removeTask, updateTask } from "../redux/actions";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { VisibilityFilters, setVisibilityFilter } from "../redux/actions";
 
 // const today = new Date();
 // const keyDate =
@@ -28,49 +29,73 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 //   ":" +
 //   today.getSeconds();
 
-const TaskList = memo((props) => {
-  const { task, tasklist, visibilityFilter } = useSelector(
-    (state) => state.taskReducer
-  );
-  console.log("visibilityFilter");
-  console.log(visibilityFilter);
+const getVisibleTodos = (todos, filter) => {
+  // console.log("in getVisible Todos");
+  switch (filter) {
+    case VisibilityFilters.SHOW_ALL:
+      // console.log("case a");
+      return todos.sort((a, b) => {
+        a = parseFloat(a.time);
+        b = parseFloat(b.time);
+        return a - b;
+      });
+
+    case VisibilityFilters.SHOW_COMPLETED:
+      return todos.filter((todo) => todo.completed);
+    case VisibilityFilters.SHOW_ACTIVE:
+      return todos.sort((a, b) => {
+        a = parseFloat(a.time);
+        b = parseFloat(b.time);
+        return a - b;
+      });
+    // console.log("case b");
+    // console.log(todos);
+    // return todos;
+    default:
+      throw new Error("Unknown filter: " + filter);
+  }
+};
+
+// const TaskList = memo((props) => {
+const TaskList = () => {
+  // const { task, tasklist } = useSelector((state) => state.taskReducer);
+  const { tasklist } = useSelector((state) => state.taskReducer);
+  // const { task, todos } = useSelector((state) => state.todos);
+  // console.log("tasklist");
+  // console.log(tasklist);
+  //const tasklist = useSelector((state) => state.tasklist);
+
   // const { modalVisible, changeModal } = useModalVisible();
   // const { inputValue, changeInput, clearInput } = useInputValue();
 
+  // const removeFromTaskList = (task) => dispatch(removeTask(task));
+  // const updateTaskList = (tasklist) => dispatch(updateTask(tasklist));
+
+  const handleRemoveTask = (id) => {
+    console.log("in remove task");
+    console.log(id);
+    dispatch(removeTask(id));
+  };
+
+  // const setCheck = (item) => {
+  //   console.log("in set check");
+  //   console.log(tasklist);
+  //   item.checked = !item.checked;
+  //   console.log(tasklist);
+  //   updateTaskList(tasklist);
+  // };
+
+  const todos = useSelector((state) => {
+    // console.log("state----------------");
+    // console.log(state);
+    getVisibleTodos(state.todos, state.visibilityFilter);
+
+    return state.todos;
+  });
+
   const dispatch = useDispatch();
-
-  const removeFromTaskList = (task) => dispatch(removeTask(task));
-  const updateTaskList = (tasklist) => dispatch(updateTask(tasklist));
-
-  const handleRemoveTask = (task) => {
-    removeFromTaskList(task);
-  };
-
-  let new_task = [
-    {
-      group: "",
-      id: 1,
-      time: "44:22",
-      title: "",
-    },
-    {
-      group: "",
-      id: 2,
-      time: "11:11",
-      title: "",
-    },
-  ];
-
-  // console.log("tasklist");
-  // console.log(tasklist);
-
-  const setCheck = (item) => {
-    console.log("in set check");
-    console.log(tasklist);
-    item.checked = !item.checked;
-    console.log(tasklist);
-    updateTaskList(tasklist);
-  };
+  // console.log("todos");
+  // console.log(todos);
 
   const ifExists = (task) => {
     if (tasklist.filter((item) => item.id === task.id).length > 0) {
@@ -87,13 +112,16 @@ const TaskList = memo((props) => {
           {/* task Title */}
           <View style={styles.checkboxContainer}>
             <Text style={{ fontSize: 22, paddingRight: 16, color: "black" }}>
-              {item.title} : {item.time} : {item.group}
+              {item.task} : {item.id} : {item.time}
             </Text>
-            <CheckBox checked={item.checked} onPress={() => setCheck(item)} />
+            <CheckBox
+              checked={item.completed}
+              onPress={() => dispatch(updateTask(item.id))}
+            />
 
             <View style={{ marginTop: 14 }}>
               <TouchableOpacity
-                onPress={() => handleRemoveTask(item)}
+                onPress={() => handleRemoveTask(item.id)}
                 activeOpacity={0.7}
                 style={{
                   // rest remains same
@@ -134,7 +162,20 @@ const TaskList = memo((props) => {
       </View>
     </SafeAreaView>
   );
-});
+
+  // const Todo = ({ onClick, completed, text }) => <Text>{text}</Text>;
+
+  // return (
+  //   <>
+  //     {todos.map((todo) => (
+  //       <View key={todo.id}>
+  //         <Todo {...todo} />
+  //         {/* <button onClick={() => dispatch(delTodo(todo.id))}>Delete</button> */}
+  //       </View>
+  //     ))}
+  //   </>
+  // );
+};
 
 const styles = StyleSheet.create({
   container: {
