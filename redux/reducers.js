@@ -2,7 +2,8 @@ import {
   GET_TASK,
   ADD_TO_TASK_LIST,
   SORT_TASK,
-  UPDATE_TASK,
+  UPDATE_STATUS,
+  UPDATE_TASk,
   REMOVE_FROM_TASK_LIST,
 } from "./actions";
 
@@ -13,16 +14,11 @@ const initialState = {
   tasklist: [],
 };
 
-// export const taskReducer = (state = [], action) => {
 export const taskReducer = (state = initialState, action) => {
   switch (action.type) {
     // case GET_TASK:
     //   return { ...state, task: action.payload };
     case ADD_TO_TASK_LIST:
-      // return [
-      //   ...state,
-      //   { task: action.payload, completed: false, id: action.id },
-      // ];
       return {
         ...state,
         tasklist: [
@@ -36,54 +32,34 @@ export const taskReducer = (state = initialState, action) => {
         ],
       };
     case REMOVE_FROM_TASK_LIST:
-      console.log("in reducer");
-      console.log(state);
-
-      // return state.tasklist.filter((task) => task.id !== action.id);
       return {
         ...state,
         tasklist: state.tasklist.filter((task) => task.id !== action.id),
       };
-    case UPDATE_TASK:
-      // return state.map((todo) =>
-      //   todo.id === action.id ? { ...todo, completed: !todo.completed } : todo
-      // );
+    case UPDATE_STATUS:
       return {
         ...state,
         tasklist: state.tasklist.map((task) =>
           task.id === action.id ? { ...task, completed: !task.completed } : task
         ),
       };
+    case UPDATE_TASk:
+      return {
+        ...state,
+        tasklist: state.tasklist.map((task) =>
+          task.id === action.id
+            ? { ...task, task: action.payload, time: action.time }
+            : task
+        ),
+        // tasklist: state.tasklist.map((task) =>
+        //   task.id === action.id ? { ...task, time: action.time } : task
+        // ),
+      };
     case SORT_TASK:
       return {
         ...state,
         tasklist: action.payload,
       };
-    // case SET_VISIBILITY_FILTER:
-    //   return action.filter;
-    default:
-      return state;
-  }
-};
-
-export const todos = (state = [], action) => {
-  switch (action.type) {
-    case ADD_TODO:
-      return [
-        ...state,
-        {
-          id: action.id,
-          text: action.text,
-          completed: false,
-          time: action.time,
-        },
-      ];
-    case DEL_TODO:
-      return state.filter((todo) => todo.id !== action.id);
-    case TOGGLE_TODO:
-      return state.map((todo) =>
-        todo.id === action.id ? { ...todo, completed: !todo.completed } : todo
-      );
     default:
       return state;
   }
@@ -100,5 +76,3 @@ export const visibilityFilter = (
       return state;
   }
 };
-
-// export default taskReducer;

@@ -1,27 +1,30 @@
-import React, { memo, useState, useEffect } from "react";
-import { StyleSheet, Pressable, View, TextInput } from "react-native";
+import React, { memo, useState, useEffect, useContext } from "react";
+import { StyleSheet, Pressable, View, TextInput, Button } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Box, Text, Modal } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 
-const AddModal = memo((props) => {
-  const { modalVisible, changeModal, onIconPress } = props;
+const UpdateModal = memo((props) => {
+  const { modalVisible, changeModal, onIconPress, modal } = props;
 
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      task: "",
-      time: "10",
+      task: modal.task,
+      time: modal.time,
     },
   });
 
   useEffect(() => {
-    reset();
+    reset({
+      task: modal.task,
+      time: modal.time,
+    });
   }, [modalVisible]);
 
   return (
@@ -29,10 +32,9 @@ const AddModal = memo((props) => {
       <Modal isOpen={modalVisible} onClose={() => changeModal(!modalVisible)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />
-          <Modal.Header>タスクの追加</Modal.Header>
+          <Modal.Header>タスクの更新</Modal.Header>
           <Modal.Body>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>タスクの追加</Text>
               <Controller
                 control={control}
                 rules={{
@@ -41,7 +43,7 @@ const AddModal = memo((props) => {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
                     style={styles.addTaskInput}
-                    placeholder="新規タスク"
+                    placeholder="タスクの更新"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -50,7 +52,6 @@ const AddModal = memo((props) => {
                 name="task"
               />
               {errors.task && <Text>This is required.</Text>}
-
               <Text style={styles.modalText}>見積もり時間</Text>
               <Box>
                 <View>
@@ -86,7 +87,7 @@ const AddModal = memo((props) => {
                 style={[styles.button, styles.buttonClose]}
                 onPress={handleSubmit(onIconPress)}
               >
-                <Text style={styles.textStyle}>追加</Text>
+                <Text style={styles.textStyle}>更新</Text>
               </Pressable>
             </View>
           </Modal.Body>
@@ -129,19 +130,15 @@ const styles = StyleSheet.create({
   },
   addTaskInput: {
     height: 40,
-    width: 100,
-    backgroundColor: "#BEC7C9",
-    textAlign: "center",
   },
   timePicker: {
     width: 180,
-    height: 89,
+    height: 100,
     fontSize: 5,
-    top: -20,
   },
   pickerItem: {
     height: 100,
   },
 });
 
-export default AddModal;
+export default UpdateModal;

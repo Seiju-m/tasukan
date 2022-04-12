@@ -1,194 +1,127 @@
-import React, { memo } from "react";
-import { useState } from "react"; //TODO delete
+import React from "react";
+import { View, FlatList, SafeAreaView, StyleSheet } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Text,
-  View,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import { CheckBox } from "react-native-elements";
-import { useSelector, useDispatch } from "react-redux";
+  Center,
+  VStack,
+  HStack,
+  Box,
+  Checkbox,
+  Icon,
+  IconButton,
+} from "native-base";
+import { useModalContents } from "../hooks/modal";
+import { removeTask, updateStatus } from "../redux/actions";
+import { FontAwesome, MaterialIcons, Entypo } from "@expo/vector-icons";
 
-import { delTodo, toggleTodo, removeTask, updateTask } from "../redux/actions";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { VisibilityFilters, setVisibilityFilter } from "../redux/actions";
-
-// const today = new Date();
-// const keyDate =
-//   today.getFullYear() +
-//   "/" +
-//   (today.getMonth() + 1) +
-//   "/" +
-//   today.getDate() +
-//   " " +
-//   today.getHours() +
-//   ":" +
-//   today.getMinutes() +
-//   ":" +
-//   today.getSeconds();
-
-const getVisibleTodos = (todos, filter) => {
-  // console.log("in getVisible Todos");
-  switch (filter) {
-    case VisibilityFilters.SHOW_ALL:
-      // console.log("case a");
-      return todos.sort((a, b) => {
-        a = parseFloat(a.time);
-        b = parseFloat(b.time);
-        return a - b;
-      });
-
-    case VisibilityFilters.SHOW_COMPLETED:
-      return todos.filter((todo) => todo.completed);
-    case VisibilityFilters.SHOW_ACTIVE:
-      return todos.sort((a, b) => {
-        a = parseFloat(a.time);
-        b = parseFloat(b.time);
-        return a - b;
-      });
-    // console.log("case b");
-    // console.log(todos);
-    // return todos;
-    default:
-      throw new Error("Unknown filter: " + filter);
-  }
-};
-
-// const TaskList = memo((props) => {
-const TaskList = () => {
-  // const { task, tasklist } = useSelector((state) => state.taskReducer);
+const TaskList = (props) => {
   const { tasklist } = useSelector((state) => state.taskReducer);
-  // const { task, todos } = useSelector((state) => state.todos);
-  // console.log("tasklist");
-  // console.log(tasklist);
-  //const tasklist = useSelector((state) => state.tasklist);
-
-  // const { modalVisible, changeModal } = useModalVisible();
-  // const { inputValue, changeInput, clearInput } = useInputValue();
-
-  // const removeFromTaskList = (task) => dispatch(removeTask(task));
-  // const updateTaskList = (tasklist) => dispatch(updateTask(tasklist));
+  const { onPress } = props;
+  // const { modalTask, setTask } = useModalContents();
 
   const handleRemoveTask = (id) => {
-    console.log("in remove task");
-    console.log(id);
     dispatch(removeTask(id));
   };
 
-  // const setCheck = (item) => {
-  //   console.log("in set check");
-  //   console.log(tasklist);
-  //   item.checked = !item.checked;
-  //   console.log(tasklist);
-  //   updateTaskList(tasklist);
-  // };
-
-  const todos = useSelector((state) => {
-    // console.log("state----------------");
-    // console.log(state);
-    getVisibleTodos(state.todos, state.visibilityFilter);
-
-    return state.todos;
-  });
-
   const dispatch = useDispatch();
-  // console.log("todos");
-  // console.log(todos);
-
-  const ifExists = (task) => {
-    if (tasklist.filter((item) => item.id === task.id).length > 0) {
-      return true;
-    }
-
-    return false;
-  };
 
   const renderItem = ({ item }) => {
     return (
-      <View style={{ marginVertical: 12 }}>
-        <View style={{ flexDirection: "row", flex: 1 }}>
-          {/* task Title */}
-          <View style={styles.checkboxContainer}>
-            <Text style={{ fontSize: 22, paddingRight: 16, color: "black" }}>
-              {item.task} : {item.id} : {item.time}
-            </Text>
-            <CheckBox
-              checked={item.completed}
-              onPress={() => dispatch(updateTask(item.id))}
-            />
-
-            <View style={{ marginTop: 14 }}>
-              <TouchableOpacity
-                onPress={() => handleRemoveTask(item.id)}
-                activeOpacity={0.7}
-                style={{
-                  // rest remains same
-                  backgroundColor: ifExists(item) ? "#F96D41" : "#2D3038",
-                  //
-                }}
+      <Center w="100%">
+        <Box maxW="300" w="100%">
+          <VStack space={4}>
+            <VStack space={2}>
+              <HStack
+                w="100"
+                justifyContent="space-between"
+                alignItems="center"
+                key={item.id.toString()}
+                space={1}
               >
-                <MaterialCommunityIcons
-                  color={ifExists(item) ? "white" : "#64676D"}
-                  size={24}
-                  name={ifExists(item) ? "bookmark-outline" : "bookmark"}
+                <Checkbox
+                  w="10"
+                  isChecked={item.completed}
+                  onChange={() => dispatch(updateStatus(item.id))}
+                  aria-label="task"
                 />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </View>
+                <Text
+                  w="230"
+                  style={{
+                    textDecorationLine: item.completed
+                      ? "line-through"
+                      : "none",
+                    color: item.completed ? "gray" : "black",
+                  }}
+                  // onPress={() => dispatch(updateStatus(item.id))}
+                  onPress={() => onPress(item.task, item.id, item.time)}
+                  // onPress={() => tapTes(item.task)}
+                >
+                  {item.task}: {item.time}
+                </Text>
+                <IconButton
+                  w="10"
+                  colorScheme="trueGray"
+                  icon={
+                    <Icon
+                      as={FontAwesome}
+                      style={styles.icon}
+                      name="trash"
+                      onPress={() => handleRemoveTask(item.id)}
+                    />
+                  }
+                  onPress={() => handleRemoveTask(item.id)}
+                />
+              </HStack>
+            </VStack>
+          </VStack>
+        </Box>
+      </Center>
     );
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
-        <View style={{ flex: 1, marginTop: 8 }}>
-          {tasklist.length === 0 ? (
-            <Text style={{ color: "#333", fontSize: 18 }}>
-              Add a task to tasklist.
-            </Text>
-          ) : (
-            <FlatList
-              data={tasklist}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderItem}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
-        </View>
-      </View>
-    </SafeAreaView>
+    // <SafeAreaView style={styles.safeArea}>
+    <View style={styles.view}>
+      {tasklist.length === 0 ? (
+        <Text style={styles.text}>Add a task to tasklist.</Text>
+      ) : (
+        <FlatList
+          data={tasklist}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          // style={styles.flatList}
+        />
+      )}
+    </View>
+    // </SafeAreaView>
   );
-
-  // const Todo = ({ onClick, completed, text }) => <Text>{text}</Text>;
-
-  // return (
-  //   <>
-  //     {todos.map((todo) => (
-  //       <View key={todo.id}>
-  //         <Todo {...todo} />
-  //         {/* <button onClick={() => dispatch(delTodo(todo.id))}>Delete</button> */}
-  //       </View>
-  //     ))}
-  //   </>
-  // );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  listView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
-  checkboxContainer: {
-    flexDirection: "row",
-    marginBottom: 20,
+  icon: {
+    color: "grey",
+    fontSize: 22,
   },
   checkbox: {
-    alignSelf: "center",
+    color: "grey",
+    fontSize: 20,
+  },
+  body: { flex: 2.2 },
+  listItem: { marginVertical: 6 },
+  left: { flex: 0.3 },
+  safeArea: { flex: 1, backgroundColor: "#fff" },
+  view: {
+    paddingHorizontal: 16,
+    // minHeight: "100%",
+  },
+  text: { color: "#333", fontSize: 18 },
+  flatList: {
+    // minHeight: "100%",
   },
 });
 

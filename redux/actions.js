@@ -2,21 +2,16 @@
 export const GET_TASK = "GET_TASK";
 export const ADD_TO_TASK_LIST = "ADD_TO_TASK_LIST";
 export const REMOVE_FROM_TASK_LIST = "REMOVE_FROM_TASK_LIST";
-export const UPDATE_TASK = "UPDATE_TASK";
+export const UPDATE_STATUS = "UPDATE_STATUS";
+export const UPDATE_TASk = "UPDATE_TASk";
 export const SORT_TASK = "SORT_TASK";
-
-export const ADD_TODO = "ADD_TODO";
-export const DEL_TODO = "DEL_TODO";
-export const TOGGLE_TODO = "TOGGLE_TODO";
 export const SET_VISIBILITY_FILTER = "SET_VISIBILITY_FILTER";
 
-let nextTodoId = 1;
-
-export const addTask = (task, time) => ({
+export const addTask = (task, time, id) => ({
   type: ADD_TO_TASK_LIST,
   payload: task,
-  time: time,
-  id: nextTodoId++,
+  time,
+  id,
 });
 
 export const removeTask = (id) => ({
@@ -24,31 +19,21 @@ export const removeTask = (id) => ({
   id,
 });
 
-export const updateTask = (id) => ({
-  type: UPDATE_TASK,
+export const updateStatus = (id) => ({
+  type: UPDATE_STATUS,
+  id,
+});
+
+export const updateTask = (task, time, id) => ({
+  type: UPDATE_TASk,
+  payload: task,
+  time,
   id,
 });
 
 export const sortTask = (taskList) => ({
   type: SORT_TASK,
   payload: taskList,
-});
-
-export const addTodo = (text, time) => ({
-  type: ADD_TODO,
-  id: nextTodoId++,
-  text,
-  time,
-});
-
-export const delTodo = (id) => ({
-  type: DEL_TODO,
-  id,
-});
-
-export const toggleTodo = (id) => ({
-  type: TOGGLE_TODO,
-  id,
 });
 
 export const setVisibilityFilter = (filter) => ({
