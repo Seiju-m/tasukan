@@ -11,17 +11,6 @@ export const useModalVisible = () => {
   };
 };
 
-export const useModalContents = () => {
-  const [modalTask, setModalTask] = useState("");
-
-  return {
-    modalTask,
-    setTask: (task) => {
-      setModalTask(task);
-    },
-  };
-};
-
 export const useUpdateModalVisible = () => {
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
 
@@ -33,23 +22,13 @@ export const useUpdateModalVisible = () => {
   };
 };
 
-export const useUpdateModalContents = () => {
-  const [updateModalId, setUpdateModalId] = useState("");
-
-  return {
-    updateModalId,
-    setTaskId: (id) => {
-      setUpdateModalId(id);
-    },
-  };
-};
-
-export const useModalContents2 = () => {
+export const useModalContents = () => {
   const defaultModal = {
     id: "",
     task: "",
+    time: "",
   };
-  const [modal, setModalTask] = useState("");
+  const [modal, setModalTask] = useState(defaultModal);
 
   return {
     modal,

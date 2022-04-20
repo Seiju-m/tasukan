@@ -1,5 +1,5 @@
 import React from "react";
-import { View, FlatList, SafeAreaView, StyleSheet } from "react-native";
+import { View, FlatList, SafeAreaView, StyleSheet, Image } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Text,
@@ -10,15 +10,14 @@ import {
   Checkbox,
   Icon,
   IconButton,
+  Badge,
 } from "native-base";
-import { useModalContents } from "../hooks/modal";
 import { removeTask, updateStatus } from "../redux/actions";
 import { FontAwesome, MaterialIcons, Entypo } from "@expo/vector-icons";
 
 const TaskList = (props) => {
   const { tasklist } = useSelector((state) => state.taskReducer);
   const { onPress } = props;
-  // const { modalTask, setTask } = useModalContents();
 
   const handleRemoveTask = (id) => {
     dispatch(removeTask(id));
@@ -45,20 +44,38 @@ const TaskList = (props) => {
                   onChange={() => dispatch(updateStatus(item.id))}
                   aria-label="task"
                 />
+                <Badge // bg="red.400"
+                  colorScheme="danger"
+                  rounded="full"
+                  bg="#E27510"
+                  mb={-4}
+                  mr={-4}
+                  zIndex={1}
+                  variant="solid"
+                  alignSelf="flex-start"
+                  left={-13}
+                  top={1}
+                  _text={{
+                    fontSize: 10,
+                  }}
+                >
+                  {item.time}
+                </Badge>
                 <Text
-                  w="230"
+                  w="200"
                   style={{
                     textDecorationLine: item.completed
                       ? "line-through"
                       : "none",
                     color: item.completed ? "gray" : "black",
                   }}
-                  // onPress={() => dispatch(updateStatus(item.id))}
                   onPress={() => onPress(item.task, item.id, item.time)}
-                  // onPress={() => tapTes(item.task)}
                 >
-                  {item.task}: {item.time}
+                  {item.task}
                 </Text>
+                {/* <Text w="5" style={styles.taskTime}>
+                  {item.time}
+                </Text> */}
                 <IconButton
                   w="10"
                   colorScheme="trueGray"
@@ -81,21 +98,24 @@ const TaskList = (props) => {
   };
 
   return (
-    // <SafeAreaView style={styles.safeArea}>
-    <View style={styles.view}>
+    <View>
       {tasklist.length === 0 ? (
-        <Text style={styles.text}>Add a task to tasklist.</Text>
+        <View style={styles.noTaskView}>
+          <Text style={styles.text}>
+            右下の+マークから{"\n"}タスクを追加できます
+          </Text>
+        </View>
       ) : (
-        <FlatList
-          data={tasklist}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          // style={styles.flatList}
-        />
+        <View style={styles.view}>
+          <FlatList
+            data={tasklist}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
       )}
     </View>
-    // </SafeAreaView>
   );
 };
 
@@ -114,14 +134,26 @@ const styles = StyleSheet.create({
   body: { flex: 2.2 },
   listItem: { marginVertical: 6 },
   left: { flex: 0.3 },
-  safeArea: { flex: 1, backgroundColor: "#fff" },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   view: {
     paddingHorizontal: 16,
-    // minHeight: "100%",
+    backgroundColor: "#fff",
+    margin: 15,
+    borderRadius: 10,
   },
-  text: { color: "#333", fontSize: 18 },
-  flatList: {
-    // minHeight: "100%",
+  noTaskView: {
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F2F2F7",
+  },
+  text: {
+    color: "#333",
+    fontSize: 18,
+    textAlign: "center",
   },
 });
 

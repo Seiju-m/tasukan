@@ -2,7 +2,7 @@ import React, { memo, useState, useEffect, useContext } from "react";
 import { StyleSheet, Pressable, View, TextInput, Button } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Box, Text, Modal } from "native-base";
+import { Box, Text, Modal, Input, Stack } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 
 const UpdateModal = memo((props) => {
@@ -41,17 +41,21 @@ const UpdateModal = memo((props) => {
                   required: true,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={styles.addTaskInput}
-                    placeholder="タスクの更新"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                  />
+                  <Stack space={1} w="90%">
+                    <Input
+                      variant="underlined"
+                      style={styles.addTaskInput}
+                      placeholder="タスクの更新"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      size="lg"
+                    />
+                  </Stack>
                 )}
                 name="task"
               />
-              {errors.task && <Text>This is required.</Text>}
+              {errors.task && <Text>タスク名は必須です</Text>}
               <Text style={styles.modalText}>見積もり時間</Text>
               <Box>
                 <View>
@@ -105,19 +109,22 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
-    padding: 35,
+    padding: 20,
     alignItems: "center",
   },
   button: {
     borderRadius: 20,
     padding: 10,
+    paddingRight: 20,
+    paddingLeft: 20,
+    marginTop: 20,
     elevation: 2,
   },
   buttonOpen: {
     backgroundColor: "#F194FF",
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#52B3D0",
   },
   textStyle: {
     color: "white",
@@ -125,16 +132,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    marginBottom: 15,
-    textAlign: "center",
+    marginTop: 30,
+    marginBottom: 10,
+    textAlign: "left",
+    minWidth: 180,
   },
   addTaskInput: {
     height: 40,
   },
   timePicker: {
     width: 180,
-    height: 100,
-    fontSize: 5,
   },
   pickerItem: {
     height: 100,

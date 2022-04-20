@@ -2,8 +2,9 @@ import React, { memo, useState, useEffect } from "react";
 import { StyleSheet, Pressable, View, TextInput } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Box, Text, Modal } from "native-base";
+import { Box, Text, Modal, Input, Stack } from "native-base";
 import { useForm, Controller } from "react-hook-form";
+import { minWidth } from "styled-system";
 
 const AddModal = memo((props) => {
   const { modalVisible, changeModal, onIconPress } = props;
@@ -12,7 +13,7 @@ const AddModal = memo((props) => {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm({
     defaultValues: {
       task: "",
@@ -32,24 +33,30 @@ const AddModal = memo((props) => {
           <Modal.Header>タスクの追加</Modal.Header>
           <Modal.Body>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>タスクの追加</Text>
               <Controller
                 control={control}
                 rules={{
                   required: true,
                 }}
+                style={{ backgroundColor: "green" }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={styles.addTaskInput}
-                    placeholder="新規タスク"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                  />
+                  <Stack space={1} w="90%">
+                    <Input
+                      variant="underlined"
+                      style={styles.addTaskInput}
+                      placeholder="新規タスク"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      size="lg"
+                    />
+                  </Stack>
                 )}
                 name="task"
               />
-              {errors.task && <Text>This is required.</Text>}
+              {errors.task && (
+                <Text style={styles.errorText}>タスク名は必須です</Text>
+              )}
 
               <Text style={styles.modalText}>見積もり時間</Text>
               <Box>
@@ -104,19 +111,22 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
-    padding: 35,
+    padding: 20,
     alignItems: "center",
   },
   button: {
     borderRadius: 20,
     padding: 10,
+    paddingRight: 20,
+    paddingLeft: 20,
+    marginTop: 20,
     elevation: 2,
   },
   buttonOpen: {
     backgroundColor: "#F194FF",
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#52B3D0",
   },
   textStyle: {
     color: "white",
@@ -124,23 +134,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    marginBottom: 15,
-    textAlign: "center",
+    marginTop: 30,
+    marginBottom: 10,
+    textAlign: "left",
+    minWidth: 180,
   },
   addTaskInput: {
     height: 40,
-    width: 100,
-    backgroundColor: "#BEC7C9",
     textAlign: "center",
   },
   timePicker: {
     width: 180,
-    height: 89,
-    fontSize: 5,
-    top: -20,
   },
   pickerItem: {
     height: 100,
+  },
+  errorText: {
+    color: "red",
+    margin: 5,
   },
 });
 

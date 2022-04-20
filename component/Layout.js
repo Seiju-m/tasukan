@@ -5,13 +5,11 @@ import AddTask from "./AddTask";
 import AddModal from "./AddModal";
 import Header from "./Header";
 import UpdateModal from "./UpdateModal";
-// check after
 import {
   useModalVisible,
-  useModalContents2,
+  useModalContents,
   useUpdateModalVisible,
 } from "../hooks/modal";
-
 import { VisibilityFilters, setVisibilityFilter } from "../redux/actions";
 import { addTask, sortTask, updateTask } from "../redux/actions";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,13 +21,13 @@ const Layout = () => {
   });
 
   const { modalVisible, changeModal } = useModalVisible();
-  const { modal, setModal } = useModalContents2();
   const { updateModalVisible, changeUpdateModal } = useUpdateModalVisible();
+  const { modal, setModal } = useModalContents(); // TODO chage func name
 
   const dispatch = useDispatch();
   const setFilter = (filter) => dispatch(setVisibilityFilter(filter));
 
-  const editTask = (task, id, time) => {
+  const taskTapped = (task, id, time) => {
     const props = {
       id: id,
       task: task,
@@ -37,6 +35,16 @@ const Layout = () => {
     };
     setModal(props);
     changeUpdateModal();
+  };
+
+  const dispatchAdd = async (props) => {
+    changeModal(!modalVisible);
+    dispatch(addTask(props.task, props.time, id));
+  };
+
+  const dispatchUpdate = async (props) => {
+    changeUpdateModal(!updateModalVisible);
+    dispatch(updateTask(props.task, props.time, modal.id));
   };
 
   const handleSortList = (sortCase) => {
@@ -72,18 +80,16 @@ const Layout = () => {
     }
   };
 
-  const inputTask = async (props) => {
-    changeModal(!modalVisible);
-    dispatch(addTask(props.task, props.time, id));
-  };
-
-  const dispatchUpdate = async (props) => {
-    changeUpdateModal(!updateModalVisible);
-    dispatch(updateTask(props.task, props.time, modal.id));
-  };
-
   return (
-    <SafeAreaView
+    // <SafeAreaView
+    //   style={[
+    //     styles.safeArea,
+    //     {
+    //       flexDirection: "column",
+    //     },
+    //   ]}
+    // >
+    <View
       style={[
         styles.safeArea,
         {
@@ -91,25 +97,25 @@ const Layout = () => {
         },
       ]}
     >
-      <View>
+      <View style={styles.headerView}>
         <Header />
       </View>
 
-      <View style={{ flex: 11, backgroundColor: "white" }}>
-        <TaskList onPress={editTask} />
+      <View style={styles.taskListView}>
+        <TaskList onPress={taskTapped} />
       </View>
 
-      <View style={styles.bottomButton}>
+      <View style={styles.bottomButtonView}>
         <AddTask onIconPress={changeModal} onSort={handleSortList}></AddTask>
       </View>
-      <View>
+      <View style={styles.ModalView}>
         <AddModal
           modalVisible={modalVisible}
           changeModal={changeModal}
-          onIconPress={inputTask}
+          onIconPress={dispatchAdd}
         />
       </View>
-      <View>
+      <View style={styles.ModalView}>
         <UpdateModal
           modalVisible={updateModalVisible}
           changeModal={changeUpdateModal}
@@ -117,7 +123,8 @@ const Layout = () => {
           modal={modal}
         />
       </View>
-    </SafeAreaView>
+    </View>
+    // </SafeAreaView>
   );
 };
 
@@ -126,6 +133,7 @@ export default Layout;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    // backgroundColor: "#F2F2F7",
   },
   icon: {
     color: "grey",
@@ -133,7 +141,20 @@ const styles = StyleSheet.create({
   checkbox: {
     color: "grey",
   },
-  bottomButton: {
+  bottomButtonView: {
     flex: 1,
+    backgroundColor: "#F2F2F7",
+  },
+  taskListView: {
+    flex: 11,
+    backgroundColor: "#F2F2F7",
+  },
+  ModalView: {
+    backgroundColor: "#F2F2F7",
+    zIndex: -1, // works on ios
+    elevation: -1,
+  },
+  headerView: {
+    backgroundColor: "#52B3D0",
   },
 });
