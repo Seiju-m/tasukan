@@ -48,35 +48,37 @@ const Layout = () => {
   };
 
   const handleSortList = (sortCase) => {
-    if (sortCase == "asc") {
-      const sortAsc = tasklist.sort((a, b) => {
-        a = parseFloat(a.time.replace(":", "."));
-        b = parseFloat(b.time.replace(":", "."));
-        return a - b;
-      });
-      setFilter(VisibilityFilters.SHOW_ALL);
-      dispatch(sortTask(sortAsc));
-    } else if (sortCase == "desc") {
-      const sortDesc = tasklist.sort((a, b) => {
-        a = parseFloat(a.time.replace(":", "."));
-        b = parseFloat(b.time.replace(":", "."));
-        return b - a;
-      });
-      dispatch(sortTask(sortDesc));
-      setFilter(VisibilityFilters.SHOW_ACTIVE);
-    } else {
-      const sortAsc = tasklist.sort((a, b) => {
-        a = parseFloat(a.time.replace(":", "."));
-        b = parseFloat(b.time.replace(":", "."));
-        return a - b;
-      });
-      //一番時間のかかるタスクを取り出し
-      let lastTask = sortAsc.slice(-1)[0];
-      sortAsc.pop();
-      //上記タスクを２番目に追加
-      sortAsc.splice(1, 0, lastTask);
-      dispatch(sortTask(sortAsc));
-      setFilter(VisibilityFilters.SHOW_ALL);
+    if (tasklist.length > 0) {
+      if (sortCase == "asc") {
+        const sortAsc = tasklist.sort((a, b) => {
+          a = parseFloat(a.time.replace(":", "."));
+          b = parseFloat(b.time.replace(":", "."));
+          return a - b;
+        });
+        setFilter(VisibilityFilters.SHOW_ALL);
+        dispatch(sortTask(sortAsc));
+      } else if (sortCase == "desc") {
+        const sortDesc = tasklist.sort((a, b) => {
+          a = parseFloat(a.time.replace(":", "."));
+          b = parseFloat(b.time.replace(":", "."));
+          return b - a;
+        });
+        dispatch(sortTask(sortDesc));
+        setFilter(VisibilityFilters.SHOW_ACTIVE);
+      } else {
+        const sortAsc = tasklist.sort((a, b) => {
+          a = parseFloat(a.time.replace(":", "."));
+          b = parseFloat(b.time.replace(":", "."));
+          return a - b;
+        });
+        //一番時間のかかるタスクを取り出し
+        let lastTask = sortAsc.slice(-1)[0];
+        sortAsc.pop();
+        //上記タスクを２番目に追加
+        sortAsc.splice(1, 0, lastTask);
+        dispatch(sortTask(sortAsc));
+        setFilter(VisibilityFilters.SHOW_ALL);
+      }
     }
   };
 
