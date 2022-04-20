@@ -6,7 +6,6 @@ export const useInputValue = (initialValue = "") => {
   return {
     inputValue,
     changeInput: (event) => {
-      // console.log(event.nativeEvent)
       setInputValue(event.nativeEvent.text);
     },
     clearInput: () => setInputValue(""),
@@ -31,9 +30,6 @@ export const useTimeValue = (initialValue = "") => {
   return {
     timeValue,
     changeTime: (event) => {
-      console.log("groupvent")
-      console.log(event.nativeEvent)
-      console.log(new Date(event.nativeEvent.timestamp))
       // setTimeValue(event.nativeEvent.text);
     },
     clearTime: () => setGroupValue(""),

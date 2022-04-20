@@ -1,153 +1,159 @@
-import React, { memo } from "react";
-import { useState } from "react"; //TODO delete
+import React from "react";
+import { View, FlatList, SafeAreaView, StyleSheet, Image } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Text,
-  View,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import { CheckBox } from "react-native-elements";
-import { useSelector, useDispatch } from "react-redux";
+  Center,
+  VStack,
+  HStack,
+  Box,
+  Checkbox,
+  Icon,
+  IconButton,
+  Badge,
+} from "native-base";
+import { removeTask, updateStatus } from "../redux/actions";
+import { FontAwesome, MaterialIcons, Entypo } from "@expo/vector-icons";
 
-import { addTask, removeTask, updateTask, sortTask } from "../redux/actions";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+const TaskList = (props) => {
+  const { tasklist } = useSelector((state) => state.taskReducer);
+  const { onPress } = props;
 
-// const today = new Date();
-// const keyDate =
-//   today.getFullYear() +
-//   "/" +
-//   (today.getMonth() + 1) +
-//   "/" +
-//   today.getDate() +
-//   " " +
-//   today.getHours() +
-//   ":" +
-//   today.getMinutes() +
-//   ":" +
-//   today.getSeconds();
-
-const TaskList = memo((props) => {
-  const { task, tasklist, visibilityFilter } = useSelector(
-    (state) => state.taskReducer
-  );
-  console.log("visibilityFilter");
-  console.log(visibilityFilter);
-  // const { modalVisible, changeModal } = useModalVisible();
-  // const { inputValue, changeInput, clearInput } = useInputValue();
+  const handleRemoveTask = (id) => {
+    dispatch(removeTask(id));
+  };
 
   const dispatch = useDispatch();
 
-  const removeFromTaskList = (task) => dispatch(removeTask(task));
-  const updateTaskList = (tasklist) => dispatch(updateTask(tasklist));
-
-  const handleRemoveTask = (task) => {
-    removeFromTaskList(task);
-  };
-
-  let new_task = [
-    {
-      group: "",
-      id: 1,
-      time: "44:22",
-      title: "",
-    },
-    {
-      group: "",
-      id: 2,
-      time: "11:11",
-      title: "",
-    },
-  ];
-
-  // console.log("tasklist");
-  // console.log(tasklist);
-
-  const setCheck = (item) => {
-    console.log("in set check");
-    console.log(tasklist);
-    item.checked = !item.checked;
-    console.log(tasklist);
-    updateTaskList(tasklist);
-  };
-
-  const ifExists = (task) => {
-    if (tasklist.filter((item) => item.id === task.id).length > 0) {
-      return true;
-    }
-
-    return false;
-  };
-
   const renderItem = ({ item }) => {
     return (
-      <View style={{ marginVertical: 12 }}>
-        <View style={{ flexDirection: "row", flex: 1 }}>
-          {/* task Title */}
-          <View style={styles.checkboxContainer}>
-            <Text style={{ fontSize: 22, paddingRight: 16, color: "black" }}>
-              {item.title} : {item.time} : {item.group}
-            </Text>
-            <CheckBox checked={item.checked} onPress={() => setCheck(item)} />
-
-            <View style={{ marginTop: 14 }}>
-              <TouchableOpacity
-                onPress={() => handleRemoveTask(item)}
-                activeOpacity={0.7}
-                style={{
-                  // rest remains same
-                  backgroundColor: ifExists(item) ? "#F96D41" : "#2D3038",
-                  //
-                }}
+      <Center w="100%">
+        <Box maxW="300" w="100%">
+          <VStack space={4}>
+            <VStack space={2}>
+              <HStack
+                w="100"
+                justifyContent="space-between"
+                alignItems="center"
+                key={item.id.toString()}
+                space={1}
               >
-                <MaterialCommunityIcons
-                  color={ifExists(item) ? "white" : "#64676D"}
-                  size={24}
-                  name={ifExists(item) ? "bookmark-outline" : "bookmark"}
+                <Checkbox
+                  w="10"
+                  isChecked={item.completed}
+                  onChange={() => dispatch(updateStatus(item.id))}
+                  aria-label="task"
                 />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </View>
+                <Badge // bg="red.400"
+                  colorScheme="danger"
+                  rounded="full"
+                  bg="#E27510"
+                  mb={-4}
+                  mr={-4}
+                  zIndex={1}
+                  variant="solid"
+                  alignSelf="flex-start"
+                  left={-13}
+                  top={1}
+                  _text={{
+                    fontSize: 10,
+                  }}
+                >
+                  {item.time}
+                </Badge>
+                <Text
+                  w="200"
+                  style={{
+                    textDecorationLine: item.completed
+                      ? "line-through"
+                      : "none",
+                    color: item.completed ? "gray" : "black",
+                  }}
+                  onPress={() => onPress(item.task, item.id, item.time)}
+                >
+                  {item.task}
+                </Text>
+                {/* <Text w="5" style={styles.taskTime}>
+                  {item.time}
+                </Text> */}
+                <IconButton
+                  w="10"
+                  colorScheme="trueGray"
+                  icon={
+                    <Icon
+                      as={FontAwesome}
+                      style={styles.icon}
+                      name="trash"
+                      onPress={() => handleRemoveTask(item.id)}
+                    />
+                  }
+                  onPress={() => handleRemoveTask(item.id)}
+                />
+              </HStack>
+            </VStack>
+          </VStack>
+        </Box>
+      </Center>
     );
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
-        <View style={{ flex: 1, marginTop: 8 }}>
-          {tasklist.length === 0 ? (
-            <Text style={{ color: "#333", fontSize: 18 }}>
-              Add a task to tasklist.
-            </Text>
-          ) : (
-            <FlatList
-              data={tasklist}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderItem}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
+    <View>
+      {tasklist.length === 0 ? (
+        <View style={styles.noTaskView}>
+          <Text style={styles.text}>
+            右下の+マークから{"\n"}タスクを追加できます
+          </Text>
         </View>
-      </View>
-    </SafeAreaView>
+      ) : (
+        <View style={styles.view}>
+          <FlatList
+            data={tasklist}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      )}
+    </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
-  container: {
+  listView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
-  checkboxContainer: {
-    flexDirection: "row",
-    marginBottom: 20,
+  icon: {
+    color: "grey",
+    fontSize: 22,
   },
   checkbox: {
-    alignSelf: "center",
+    color: "grey",
+    fontSize: 20,
+  },
+  body: { flex: 2.2 },
+  listItem: { marginVertical: 6 },
+  left: { flex: 0.3 },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  view: {
+    paddingHorizontal: 16,
+    backgroundColor: "#fff",
+    margin: 15,
+    borderRadius: 10,
+  },
+  noTaskView: {
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F2F2F7",
+  },
+  text: {
+    color: "#333",
+    fontSize: 18,
+    textAlign: "center",
   },
 });
 

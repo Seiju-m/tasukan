@@ -1,23 +1,25 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
+import { createStore, combineReducers } from "redux";
+// import thunk from "redux-thunk";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persistStore, persistReducer } from "redux-persist";
 
-import taskReducer from "./reducers";
+// import { taskReducer, visibilityFilter } from "./reducers";
+import { taskReducer, visibilityFilter } from "./reducers";
 
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  whitelist: ["tasklist"],
+  whitelist: ["visibilityFilter", "tasklist", "taskReducer"],
 };
 
 const rootReducer = combineReducers({
-  taskReducer: persistReducer(persistConfig, taskReducer),
+  visibilityFilter,
+  taskReducer,
 });
 
-export const store = createStore(rootReducer, applyMiddleware(thunk));
-// export const store = createStore(rootReducer);
-console.log("before persisit");
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+const store = createStore(persistedReducer);
 export const persistor = persistStore(store);
+export default store;
 
 // persistor.purge();

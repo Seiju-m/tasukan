@@ -10,3 +10,30 @@ export const useModalVisible = () => {
     },
   };
 };
+
+export const useUpdateModalVisible = () => {
+  const [updateModalVisible, setUpdateModalVisible] = useState(false);
+
+  return {
+    updateModalVisible,
+    changeUpdateModal: () => {
+      setUpdateModalVisible(!updateModalVisible);
+    },
+  };
+};
+
+export const useModalContents = () => {
+  const defaultModal = {
+    id: "",
+    task: "",
+    time: "",
+  };
+  const [modal, setModalTask] = useState(defaultModal);
+
+  return {
+    modal,
+    setModal: (props) => {
+      setModalTask(props);
+    },
+  };
+};
